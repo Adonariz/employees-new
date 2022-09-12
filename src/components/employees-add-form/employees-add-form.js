@@ -17,6 +17,36 @@ class EmployeesAddForm extends Component {
     });
   }
 
+  generateID() {
+    return new Date().valueOf();
+  }
+
+  onFormSubmit = (evt) => {
+    evt.preventDefault();
+
+    const {name, salary} = this.state;
+    const {onAdd} = this.props;
+
+    if (name && salary) {
+      const newEmployee = {
+        id: this.generateID(),
+        name: name,
+        salary: salary,
+        increase: false,
+      }
+  
+      onAdd(newEmployee);
+      this.resetState();
+    }
+  }
+
+  resetState = () => {
+    this.setState(() => ({
+      name: '',
+      salary: '',
+    }));
+  }
+
   render() {
     const {name, salary} = this.state;
 
@@ -41,7 +71,8 @@ class EmployeesAddForm extends Component {
   
           <button 
               type="submit"
-              className="btn btn-outline-light">Добавить</button>
+              className="btn btn-outline-light"
+              onClick={this.onFormSubmit}>Добавить</button>
         </form>
       </div>
     );
