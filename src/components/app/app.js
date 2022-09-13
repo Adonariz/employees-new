@@ -18,6 +18,7 @@ class App extends Component {
         {id: 2, name: 'Alex Shepard', salary: 3000, increase: false, promotion: false},
         {id: 3, name: 'Biggus Dickus', salary: 5000, increase: false, promotion: false},
       ],
+      term: '',
     }
   }
 
@@ -93,22 +94,39 @@ class App extends Component {
     }));
   }
 
+  search = (items, term) => {
+    if (term.length === 0) {
+      return items;
+    }
+
+    return items.filter(item => {
+      return item.name.indexOf(term) > -1 // indexOf возвращает -1, если ничего не находит
+    });
+  }
+
+  onSearchInput = (term) => {
+    this.setState({
+      term: term,
+    });
+  }
+
   render() {
-    const {data} = this.state;
+    const {data, term} = this.state;
     const employees = data.length;
     const withBonus = data.filter(item => item.increase === true).length;
+    const filteredData = this.search(data, term);
 
     return (
       <div className="app">
         <AppInfo employees={employees} withBonus={withBonus} />
   
         <div className="search-panel">
-          <SearchPanel />
+          <SearchPanel onSearchInput={this.onSearchInput} />
           <AppFilter />
         </div>
         
         <EmployeesList 
-          data={data}
+          data={filteredData}
           onDelete={this.deleteItem}
           onToggleProp={this.onToggleProp} />
         <EmployeesAddForm 
