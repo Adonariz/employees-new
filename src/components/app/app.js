@@ -19,6 +19,7 @@ class App extends Component {
         {id: 3, name: 'Biggus Dickus', salary: 5000, increase: false, promotion: false},
       ],
       term: '',
+      filter: 'all',
     }
   }
 
@@ -100,7 +101,7 @@ class App extends Component {
     }
 
     return items.filter(item => {
-      return item.name.indexOf(term) > -1 // indexOf возвращает -1, если ничего не находит
+      return item.name.toLowerCase().indexOf(term.toLowerCase()) > -1 // indexOf возвращает -1, если ничего не находит
     });
   }
 
@@ -110,11 +111,36 @@ class App extends Component {
     });
   }
 
+  onFilterSelect = (filter) => {
+    this.setState({
+      filter: filter,
+    });
+  }
+
+  filterItems = (items, filter) => {
+    let filteredItems = [];
+
+    switch (filter) {
+      case ('promotion'):
+        filteredItems = items.filter(item => item.promotion === true);
+        break;
+      case ('salary'):
+        filteredItems = items.filter(item => item.salary > 1000);
+        break;
+      default:
+        filteredItems = items;
+        break;
+    }
+
+    return filteredItems;
+  }
+
   render() {
-    const {data, term} = this.state;
+    const {data, term, filter} = this.state;
     const employees = data.length;
     const withBonus = data.filter(item => item.increase === true).length;
-    const filteredData = this.search(data, term);
+    const dataAfterSearch = this.search(data, term);
+    const filteredData = this.filterItems(dataAfterSearch, filter);
 
     return (
       <div className="app">
@@ -122,7 +148,7 @@ class App extends Component {
   
         <div className="search-panel">
           <SearchPanel onSearchInput={this.onSearchInput} />
-          <AppFilter />
+          <AppFilter onFilterSelect={this.onFilterSelect} filter={filter} />
         </div>
         
         <EmployeesList 
